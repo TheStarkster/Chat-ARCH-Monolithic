@@ -9,7 +9,7 @@ class Cform extends Component {
             receiver: "",
             sender: "",
         }
-        const io = socketIOClient('http://localhost:2000')
+        const io = socketIOClient('http://18.219.197.206:2000')
         io.on("new_message",(data)=> {
             console.log(data)
         })
