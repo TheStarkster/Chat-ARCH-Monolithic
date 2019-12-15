@@ -1,4 +1,5 @@
 const express = require('express')
+const WebSocket = require('ws')
 const app = express()
 
 const http = require('http').createServer(app)
@@ -16,8 +17,8 @@ io.on("connection", (socket) => {
         var socketId = users[data.receiver]
         io.to(socketId).emit("new_message",data)
     })
-
 })
+
 
 http.listen(2000, () => {
     console.log("[Server Started]")
