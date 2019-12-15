@@ -1,32 +1,24 @@
-var WebSocketServer = require('websocket').server;
-var http = require('http');
+const express = require('express')
+const app = express()
 
-var server = http.createServer(function(request, response) {
-  // process HTTP request. Since we're writing just WebSockets
-  // server we don't have to implement anything.
-});
-server.listen(1337, function() { 
-    console.log('server started on 1337')
-});
+const http = require('http').createServer(app)
+const io = require('socket.io')(http)
 
-// create the server
-wsServer = new WebSocketServer({
-  httpServer: server
-});
+var users = []
+io.on("connection", (socket) => {
+    console.log("[User Connected]", socket.id)
 
-// WebSocket server
-wsServer.on('request', function(request) {
-  var connection = request.accept(null, request.origin);
+    socket.on("User_Connected",(username) => {
+        users[username] = socket.id;
+        io.emit("User_Connected", username)
+    })
+    socket.on("send_message", (data) => {
+        var socketId = users[data.receiver]
+        io.to(socketId).emit("new_message",data)
+    })
+})
 
-  // This is the most important callback for us, we'll handle
-  // all messages from users here.
-  connection.on('message', function(message) {
-    if (message.type === 'utf8') {
-      // process WebSocket message
-    }
-  });
 
-  connection.on('close', function(connection) {
-    // close user connection
-  });
-});
+http.listen(2000, () => {
+    console.log("[Server Started]")
+})
